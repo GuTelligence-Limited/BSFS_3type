@@ -1,6 +1,6 @@
 ---
 title: BSFS 3-Class Type7 Risk MVP
-emoji: B
+emoji: 🚽
 colorFrom: blue
 colorTo: green
 sdk: gradio

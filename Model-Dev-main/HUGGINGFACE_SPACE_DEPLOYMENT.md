@@ -44,16 +44,24 @@ Use a Hugging Face token with permission to create and write Spaces under the ta
 
 ## Create and Push
 
-Recommended Space name:
+Current MVP Space:
+
+```text
+https://huggingface.co/spaces/perram27/bsfs-3class-type7-risk-mvp
+```
+
+The original target organization Space was:
 
 ```text
 GuTelligence-Limited/bsfs-3class-type7-risk-mvp
 ```
 
-Create the Space:
+Creating under `GuTelligence-Limited` failed because the logged-in Hugging Face user did not have organization write permission. The MVP Space was therefore created under the logged-in user namespace `perram27`.
+
+Create the Space under a namespace with write permission:
 
 ```powershell
-..\.venv\Scripts\hf.exe repo create GuTelligence-Limited/bsfs-3class-type7-risk-mvp --type space --space-sdk gradio
+..\.venv\Scripts\hf.exe repos create perram27/bsfs-3class-type7-risk-mvp --type space --space-sdk gradio --exist-ok
 ```
 
 Initialize and push the local Space repo:
@@ -69,6 +77,14 @@ git branch -M main
 git push -u origin main
 ```
 
+If Git HTTPS push is blocked or times out, upload small files through the Hub API:
+
+```powershell
+..\.venv\Scripts\hf.exe upload perram27/bsfs-3class-type7-risk-mvp app.py app.py --repo-type space --commit-message "Add Gradio app"
+..\.venv\Scripts\hf.exe upload perram27/bsfs-3class-type7-risk-mvp requirements.txt requirements.txt --repo-type space --commit-message "Add requirements"
+..\.venv\Scripts\hf.exe upload perram27/bsfs-3class-type7-risk-mvp model_registry.json model_registry.json --repo-type space --commit-message "Add model registry"
+```
+
 ## Large File Handling
 
 The model checkpoint is stored in the Space repo through Git LFS:
@@ -78,3 +94,20 @@ checkpoints_clean_split_convnext_tiny/bsfs_convnext_tiny_final.pth
 ```
 
 Do not commit this checkpoint to the normal GitHub code repository. GitHub is used for source code and documentation; Hugging Face Space/Git LFS is used for the deployable model binary.
+
+Current checkpoint upload status:
+
+- Small Space files are uploaded.
+- The `.pth` checkpoint upload timed out repeatedly from the current network.
+- The Space will not run inference until the checkpoint exists at:
+
+```text
+checkpoints_clean_split_convnext_tiny/bsfs_convnext_tiny_final.pth
+```
+
+Retry checkpoint upload from a stable network:
+
+```powershell
+cd C:\gutelligence\cv_model\Model-Dev-main\hf_space_mvp
+..\.venv\Scripts\hf.exe upload perram27/bsfs-3class-type7-risk-mvp checkpoints_clean_split_convnext_tiny\bsfs_convnext_tiny_final.pth checkpoints_clean_split_convnext_tiny/bsfs_convnext_tiny_final.pth --repo-type space --commit-message "Add ConvNeXt Tiny checkpoint"
+```

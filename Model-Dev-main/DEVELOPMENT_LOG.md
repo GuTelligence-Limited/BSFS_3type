@@ -2319,9 +2319,28 @@ Type 1/2 hard
 
 Deployment blocker:
 
-- The local machine has `hf.exe` available through the project virtual environment, but Hugging Face authentication is not configured.
-- `hf auth whoami` returned `Not logged in`.
-- Next action: login with a Hugging Face token that can create/write Spaces under the target organization, then initialize and push `hf_space_mvp` to `https://huggingface.co/spaces/GuTelligence-Limited/bsfs-3class-type7-risk-mvp`.
+- Hugging Face login succeeded as `perram27`.
+- Creating the Space under `GuTelligence-Limited` failed with `403 Forbidden` because the token/user did not have organization write permission.
+- Created MVP Space under the logged-in user namespace:
+
+```text
+https://huggingface.co/spaces/perram27/bsfs-3class-type7-risk-mvp
+```
+
+- `git push` to Hugging Face timed out when connecting to `huggingface.co:443`.
+- `hf upload` succeeded for small files:
+
+```text
+.gitattributes
+README.md
+app.py
+model_registry.json
+requirements.txt
+```
+
+- Uploading `checkpoints_clean_split_convnext_tiny/bsfs_convnext_tiny_final.pth` timed out after repeated attempts from the current network.
+- Current Space state: code is deployed, but inference cannot run until the checkpoint is uploaded.
+- Next action: retry checkpoint upload from a stable network or upload the checkpoint through the Hugging Face web UI to the exact registry path.
 
 ### Type 7 Risk Calibration on Current Primary Model
 

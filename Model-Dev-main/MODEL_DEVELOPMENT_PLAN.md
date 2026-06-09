@@ -700,4 +700,7 @@ Hugging Face MVP status:
 - The Space exposes the product 3-class schema and continuous Type 7 probability.
 - The ConvNeXt-Tiny checkpoint is tracked through Git LFS inside the Space repository.
 - Local smoke testing passed.
-- Remaining deployment requirement: authenticate Hugging Face CLI and push the Space repository.
+- Hugging Face MVP Space exists at `https://huggingface.co/spaces/perram27/bsfs-3class-type7-risk-mvp`.
+- Small app files are uploaded to the Space.
+- Organization deployment under `GuTelligence-Limited` requires Hugging Face org write permission.
+- Remaining deployment requirement: upload `bsfs_convnext_tiny_final.pth` to the Space path expected by `model_registry.json`; current network attempts timed out on the 111 MB checkpoint.
