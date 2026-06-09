@@ -693,3 +693,11 @@ Release direction:
 - Use GitHub for code, documentation, metrics, and reproducible training/evaluation scripts.
 - Use Hugging Face model repositories or Git LFS for trained model weights.
 - Keep `model_registry.json` as the pointer between product code and the externally hosted checkpoint.
+
+Hugging Face MVP status:
+
+- A standalone Gradio Space package exists under `hf_space_mvp/`.
+- The Space exposes the product 3-class schema and continuous Type 7 probability.
+- The ConvNeXt-Tiny checkpoint is tracked through Git LFS inside the Space repository.
+- Local smoke testing passed.
+- Remaining deployment requirement: authenticate Hugging Face CLI and push the Space repository.

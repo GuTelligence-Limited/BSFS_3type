@@ -18,6 +18,8 @@ Model-Dev-main/GuTelligence-StoMy-First-Project-2/
 *.pt
 *.onnx
 *.safetensors
+Model-Dev-main/hf_space_mvp/.git/
+Model-Dev-main/hf_space_mvp/checkpoints_clean_split_convnext_tiny/
 
 # Generated caches and logs.
 *.log

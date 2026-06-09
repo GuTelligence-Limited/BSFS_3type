@@ -2257,6 +2257,72 @@ Notes:
 - The trained ConvNeXt-Tiny checkpoint remains local and is referenced by `model_registry.json`, but the binary weight file is intentionally not committed.
 - The next deployment step should publish the checkpoint to a Hugging Face model repository or configure Git LFS before sharing weights through GitHub.
 
+## 2026-06-09 - Hugging Face Space MVP package
+
+Goal:
+
+- Prepare an MVP Hugging Face Space deployment for the current product schema.
+- Expose image upload inference through Gradio.
+- Return 3-class BSFS product output and continuous Type 7 probability.
+
+Files added:
+
+```text
+hf_space_mvp/.gitattributes
+hf_space_mvp/.gitignore
+hf_space_mvp/README.md
+hf_space_mvp/app.py
+hf_space_mvp/model_registry.json
+hf_space_mvp/requirements.txt
+hf_space_mvp/checkpoints_clean_split_convnext_tiny/bsfs_convnext_tiny_final.pth
+HUGGINGFACE_SPACE_DEPLOYMENT.md
+```
+
+Implementation:
+
+- Built a standalone Gradio app in `hf_space_mvp/app.py`.
+- Reused the current ConvNeXt-Tiny 7-class checkpoint and mapped raw output to the product 3-class schema.
+- Preserved Type 7 probability as a continuous risk signal with no fixed alert threshold.
+- Configured Git LFS tracking for `.pth`, `.pt`, `.onnx`, and `.safetensors` files inside the Space repo.
+- Prepared the Space directory so it can be initialized and pushed as a standalone Hugging Face Space repo after authentication.
+- Kept the checkpoint out of the normal GitHub code repository; it is intended for Hugging Face Git LFS.
+
+Local verification:
+
+```powershell
+cd Model-Dev-main\hf_space_mvp
+$env:PYTHONPATH='.'
+@'
+from pathlib import Path
+from PIL import Image
+import app
+image_path = Path('..') / 'GuTelligence-StoMy-Clean-Split' / 'test' / 'Type 1' / 'test__type1_1_jpg.rf.a203c074ce6e75b9266fe03af3169bbe.jpg'
+img = Image.open(image_path)
+result = app.predict(img)
+print(result[0])
+print(result[1])
+print(result[2])
+print(result[3])
+print(result[4]['registry_version'])
+'@ | ..\.venv\Scripts\python.exe -
+```
+
+Smoke-test output:
+
+```text
+Type 1/2 hard
+0.4168
+0.085
+{'Type 1/2 hard': 0.41677337884902954, 'Type 3/4 normal-range': 0.14977066218852997, 'Type 5/6/7 loose-watery': 0.4334560036659241}
+2026-06-09-product-3class-v1
+```
+
+Deployment blocker:
+
+- The local machine has `hf.exe` available through the project virtual environment, but Hugging Face authentication is not configured.
+- `hf auth whoami` returned `Not logged in`.
+- Next action: login with a Hugging Face token that can create/write Spaces under the target organization, then initialize and push `hf_space_mvp` to `https://huggingface.co/spaces/GuTelligence-Limited/bsfs-3class-type7-risk-mvp`.
+
 ### Type 7 Risk Calibration on Current Primary Model
 
 Date: 2026-06-08
