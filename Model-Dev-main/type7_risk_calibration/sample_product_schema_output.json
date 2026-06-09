@@ -1,0 +1,111 @@
+{
+  "image_path": "GuTelligence-StoMy-Clean-Split\\test\\Type 1\\test__type1_1_jpg.rf.a203c074ce6e75b9266fe03af3169bbe.jpg",
+  "mode": "best_accuracy",
+  "accepted": true,
+  "product_schema": {
+    "schema_version": "bsfs_product_3class_v1",
+    "primary_group": "Type 1/2 hard",
+    "primary_group_confidence": 0.41677337884902954,
+    "primary_group_rule": "raw_top1_label_mapped_to_3class_product_group",
+    "group_probabilities": {
+      "Type 1/2 hard": 0.41677337884902954,
+      "Type 3/4 normal-range": 0.14977066218852997,
+      "Type 5/6/7 loose-watery": 0.4334560036659241
+    },
+    "probability_argmax_group": "Type 5/6/7 loose-watery",
+    "probability_argmax_group_confidence": 0.4334560036659241,
+    "bsfs_continuous_score": 3.4417455196380615,
+    "product_group_score": 3.7500934079289436,
+    "type7_probability": 0.08502678573131561,
+    "type7_risk": {
+      "score": 0.08502678573131561,
+      "threshold_status": "not_calibrated_for_fixed_flag",
+      "reason": "validation-selected Type 7 thresholds did not generalize to clean test"
+    },
+    "raw_top1_label": "Type 1",
+    "raw_top1_confidence": 0.41111546754837036,
+    "raw_probabilities": {
+      "Type 1": 0.41111546754837036,
+      "Type 2": 0.0056579201482236385,
+      "Type 3": 0.005215448327362537,
+      "Type 4": 0.1445552110671997,
+      "Type 5": 0.260315477848053,
+      "Type 6": 0.0881137102842331,
+      "Type 7": 0.08502678573131561
+    }
+  },
+  "primary_group": "Type 1/2 hard",
+  "primary_group_confidence": 0.41677337884902954,
+  "bsfs_continuous_score": 3.4417455196380615,
+  "product_group_score": 3.7500934079289436,
+  "type7_probability": 0.08502678573131561,
+  "pred_label": "Type 1",
+  "clinical_pred_label": "Type 1",
+  "group_pred_label": "Type 1/2 hard",
+  "raw_pred_label": "Type 1",
+  "confidence": 0.41111546754837036,
+  "clinical_confidence": 0.41111546754837036,
+  "group_confidence": 0.41677337884902954,
+  "margin_top1_top2": 0.15079998970031738,
+  "abstain_reasons": [],
+  "warnings": [],
+  "top3": [
+    {
+      "label": "Type 1",
+      "probability": 0.41111546754837036
+    },
+    {
+      "label": "Type 5",
+      "probability": 0.260315477848053
+    },
+    {
+      "label": "Type 4",
+      "probability": 0.1445552110671997
+    }
+  ],
+  "probabilities": {
+    "Type 1": 0.41111546754837036,
+    "Type 2": 0.0056579201482236385,
+    "Type 3": 0.005215448327362537,
+    "Type 4": 0.1445552110671997,
+    "Type 5": 0.260315477848053,
+    "Type 6": 0.0881137102842331,
+    "Type 7": 0.08502678573131561
+  },
+  "clinical_interpretation": {
+    "rule": "strict_label",
+    "raw_labels_grouped": [
+      "Type 1"
+    ]
+  },
+  "group_interpretation": {
+    "rule": "raw_top1_label_mapped_to_bsfs_4class",
+    "groups": {
+      "Type 1/2 hard": [
+        0,
+        1
+      ],
+      "Type 3/4 normal-range": [
+        2,
+        3
+      ],
+      "Type 5/6 soft-loose": [
+        4,
+        5
+      ],
+      "Type 7 watery": [
+        6
+      ]
+    },
+    "group_probabilities": {
+      "Type 1/2 hard": 0.41677337884902954,
+      "Type 3/4 normal-range": 0.14977066218852997,
+      "Type 5/6 soft-loose": 0.34842920303344727,
+      "Type 7 watery": 0.08502678573131561
+    },
+    "group_sum_argmax_label": "Type 1/2 hard",
+    "group_sum_argmax_confidence": 0.41677337884902954
+  },
+  "registry_version": "2026-06-02-grouped-product-v2",
+  "source_result": "checkpoints_clean_split_convnext_tiny/summary.md"
+}

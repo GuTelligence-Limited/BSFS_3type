@@ -1,0 +1,258 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+
+\title{BSFS Computer Vision Model Progress and Research Direction}
+\author{GuTelligence Model Development}
+\date{June 5, 2026}
+
+\begin{document}
+\maketitle
+
+\section{Executive Summary}
+
+The current best model is a ConvNeXt-Tiny classifier trained on the leakage-safe clean split. Under strict 7-class BSFS classification, performance remains limited. However, when evaluated under a product-aligned grouping strategy, performance improves substantially.
+
+The strongest current product direction is to move from exact 7-class output to a 3-class primary product output:
+
+\begin{itemize}
+    \item Type 1/2: hard stool pattern
+    \item Type 3/4: normal-range stool pattern
+    \item Type 5/6/7: loose-to-watery stool pattern
+\end{itemize}
+
+At the same time, Type 7 probability should be preserved as an independent watery-risk signal. This keeps the product output simple while retaining clinically important risk information.
+
+\section{Current Best Model}
+
+The current primary model is:
+
+\begin{verbatim}
+checkpoints_clean_split_convnext_tiny/bsfs_convnext_tiny_final.pth
+\end{verbatim}
+
+It uses:
+
+\begin{itemize}
+    \item Backbone: ConvNeXt-Tiny
+    \item Input size: 300 x 300
+    \item Evaluation: deterministic 5-view TTA
+    \item Dataset: GuTelligence-StoMy-Clean-Split
+\end{itemize}
+
+\section{Current Best Performance}
+
+\subsection{Single Clean Test Set}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lr}
+\toprule
+Metric & Value \\
+\midrule
+Strict 7-class accuracy & 48.15\% \\
+Type 3/4 relaxed accuracy & 57.41\% \\
+4-class grouped accuracy & 70.37\% \\
+3-class grouped accuracy & 79.63\% \\
+Macro F1, strict 7-class & 0.4727 \\
+Adjacent accuracy & 86.57\% \\
+MAE & 0.7130 \\
+\bottomrule
+\end{tabular}
+\caption{Best single clean-test performance from the current ConvNeXt-Tiny model.}
+\end{table}
+
+\subsection{Repeated Clean Split Estimate}
+
+Repeated split evaluation gives a more conservative estimate of generalization:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrr}
+\toprule
+Metric & Mean & Std \\
+\midrule
+Strict 7-class accuracy & 46.45\% & 7.77\% \\
+4-class grouped accuracy & 64.20\% & 5.86\% \\
+3-class grouped accuracy & 72.38\% & 2.55\% \\
+Macro F1, strict 7-class & 0.4188 & 0.0823 \\
+Adjacent accuracy & 79.17\% & 3.79\% \\
+\bottomrule
+\end{tabular}
+\caption{Repeated clean split results across three leakage-safe splits.}
+\end{table}
+
+\section{Completed Experiments and Decisions}
+
+\subsection{Data Leakage Control}
+
+The original dataset split was found to have duplicate or near-duplicate leakage risk. A clean split was created, and all serious model comparisons now use this clean split or repeated clean split manifests.
+
+\subsection{Architecture Experiments}
+
+The following model directions were tested and rejected as replacements:
+
+\begin{itemize}
+    \item EfficientNet-B4 tuned baselines
+    \item High-resolution EfficientNet-B4
+    \item Direct 4-class ConvNeXt
+    \item Direct 6-class Type 3/4 merged ConvNeXt
+    \item EfficientNetV2-S
+    \item ConvNeXt-Small
+\end{itemize}
+
+The key finding is that larger or stronger backbones did not improve repeated-split generalization. ConvNeXt-Tiny remains the best overall candidate.
+
+\subsection{Specialist and Multi-Task Experiments}
+
+The following approaches were also tested and rejected:
+
+\begin{itemize}
+    \item Type 7 binary gate
+    \item Type 7 cascade
+    \item Type 2/3/4 neighbor classifier
+    \item Ordinal soft-label fine-tuning
+    \item Ordinal-aware ConvNeXt loss
+    \item 4-class group plus 7-class raw multi-task learning
+    \item Raw-primary multi-task learning with auxiliary group loss
+\end{itemize}
+
+These experiments did not reliably improve grouped accuracy, strict accuracy, macro F1, or Type 7 recall across repeated splits.
+
+\section{Interpretation}
+
+The main blocker is unlikely to be model capacity alone. The evidence points toward:
+
+\begin{itemize}
+    \item label ambiguity between adjacent BSFS classes;
+    \item limited Type 7 support;
+    \item public/Roboflow-style images not matching the future smart-seat camera distribution;
+    \item weak generalization across leakage-safe repeated splits;
+    \item mismatch between strict 7-class accuracy and the product's clinically meaningful output.
+\end{itemize}
+
+For product use, exact 7-class prediction is probably too brittle at this stage. A grouped and ordinal interpretation is more aligned with both the BSFS scale and the smart toilet use case.
+
+\section{Recommended Product Output}
+
+The recommended near-term output format is:
+
+\begin{verbatim}
+primary_group: hard | normal_range | loose_watery
+primary_group_confidence: float
+bsfs_continuous_score: float
+type7_probability: float
+watery_risk_flag: low | medium | high
+\end{verbatim}
+
+The primary output should be 3-class grouped:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ll}
+\toprule
+Product Group & BSFS Types \\
+\midrule
+Hard & Type 1/2 \\
+Normal range & Type 3/4 \\
+Loose-to-watery & Type 5/6/7 \\
+\bottomrule
+\end{tabular}
+\caption{Recommended product-facing BSFS grouping.}
+\end{table}
+
+Type 7 should not disappear. It should remain as a separate probability and risk signal, even when the main group is loose-to-watery.
+
+\section{Next Research Direction}
+
+\subsection{Phase A: Formal 3-Class Evaluation}
+
+Create a formal evaluation script for:
+
+\begin{itemize}
+    \item 3-class grouped accuracy;
+    \item 3-class macro F1;
+    \item confidence-bin accuracy;
+    \item Type 7 probability metrics;
+    \item Type 7 AUROC and recall at selected thresholds;
+    \item watery-risk false negative rate.
+\end{itemize}
+
+Baseline target:
+
+\begin{itemize}
+    \item Current single clean-test 3-class accuracy: 79.63\%
+    \item Current repeated-split 3-class accuracy mean: 72.38\%
+\end{itemize}
+
+\subsection{Phase B: Product Confidence and Calibration}
+
+The model currently produces softmax probabilities, but these probabilities are not yet calibrated. The next step is to measure and improve:
+
+\begin{itemize}
+    \item reliability curves;
+    \item expected calibration error;
+    \item confidence threshold behavior;
+    \item low-confidence abstention;
+    \item Type 7 risk thresholding.
+\end{itemize}
+
+\subsection{Phase C: 3-Class Primary Model with Type 7 Risk Head}
+
+After formal post-hoc evaluation, train a model with:
+
+\begin{itemize}
+    \item a 3-class primary group head;
+    \item a Type 7 binary risk head;
+    \item optional raw 7-class auxiliary head for diagnostic transparency.
+\end{itemize}
+
+This architecture better matches the product objective:
+
+\begin{verbatim}
+main task: hard vs normal vs loose_watery
+risk task: Type 7 watery probability
+\end{verbatim}
+
+\subsection{Phase D: Device-Native Validation}
+
+To move toward a 90\% product-level target, the project needs a validation set collected from the actual smart toilet seat camera module. This should include:
+
+\begin{itemize}
+    \item native camera angle;
+    \item native lighting;
+    \item toilet bowl background;
+    \item real capture timing;
+    \item multiple frames per event if available.
+\end{itemize}
+
+Without device-native data, model-only gains on the current public-style dataset are unlikely to reach product-grade reliability.
+
+\section{Proposed Success Criteria}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ll}
+\toprule
+Metric & Near-Term Target \\
+\midrule
+Single clean-test 3-class accuracy & $\geq$ 82\% \\
+Repeated-split 3-class accuracy mean & $\geq$ 75\% \\
+Type 7 AUROC & to be established \\
+Type 7 recall at risk threshold & to be established \\
+Watery-risk false negative rate & minimize and report explicitly \\
+Device-native validation accuracy & to be established \\
+\bottomrule
+\end{tabular}
+\caption{Recommended next-stage success criteria.}
+\end{table}
+
+\section{Conclusion}
+
+The current best product-aligned result is 79.63\% 3-class grouped accuracy on the clean test set, with a more conservative repeated-split mean of 72.38\%. This is the most promising direction so far.
+
+The recommended next step is not another larger backbone. Instead, the project should formalize the 3-class product output, preserve Type 7 probability as a separate risk signal, calibrate confidence, and validate on device-native data.
+
+\end{document}

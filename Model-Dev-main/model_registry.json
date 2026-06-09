@@ -1,0 +1,57 @@
+{
+  "version": "2026-06-09-product-3class-v1",
+  "class_names": ["Type 1", "Type 2", "Type 3", "Type 4", "Type 5", "Type 6", "Type 7"],
+  "preprocessing": {
+    "image_size": 300,
+    "resize_size": 340,
+    "mean": [0.485, 0.456, 0.406],
+    "std": [0.229, 0.224, 0.225],
+    "tta": "deterministic_5_view_resize_340_crop_300"
+  },
+  "modes": {
+    "product_3class": {
+      "description": "Primary product mode: 7-class ConvNeXt-Tiny mapped to 3-class product schema with Type 7 probability retained as a continuous risk score.",
+      "checkpoints": [
+        {
+          "path": "checkpoints_clean_split_convnext_tiny/bsfs_convnext_tiny_final.pth",
+          "model_type": "convnext_tiny",
+          "weight": 1.0
+        }
+      ],
+      "confidence_threshold": 0.0,
+      "margin_threshold": 0.0,
+      "source_result": "checkpoints_clean_split_convnext_tiny/grouped_3class_type7_risk.md",
+      "clean_test": {
+        "coverage": 1.0,
+        "primary_schema": "bsfs_product_3class_v1",
+        "grouped_3class_rule": "raw_top1_label_mapped_to_3class_product_group",
+        "grouped_3class_accuracy": 0.7962962962962963,
+        "grouped_3class_macro_f1": 0.7946,
+        "grouped_3class_weighted_f1": 0.7974,
+        "type7_probability_policy": "continuous_score_no_fixed_threshold",
+        "type7_roc_auc": 0.6815,
+        "type7_average_precision": 0.2214,
+        "type7_threshold_status": "not_calibrated_for_fixed_flag"
+      }
+    },
+    "best_accuracy": {
+      "description": "Backward-compatible alias for product_3class.",
+      "checkpoints": [
+        {
+          "path": "checkpoints_clean_split_convnext_tiny/bsfs_convnext_tiny_final.pth",
+          "model_type": "convnext_tiny",
+          "weight": 1.0
+        }
+      ],
+      "confidence_threshold": 0.0,
+      "margin_threshold": 0.0,
+      "source_result": "checkpoints_clean_split_convnext_tiny/grouped_3class_type7_risk.md",
+      "clean_test": {
+        "coverage": 1.0,
+        "primary_schema": "bsfs_product_3class_v1",
+        "grouped_3class_accuracy": 0.7962962962962963,
+        "type7_probability_policy": "continuous_score_no_fixed_threshold"
+      }
+    }
+  }
+}

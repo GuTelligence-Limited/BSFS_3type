@@ -1,0 +1,42 @@
+{
+  "prediction_csv": "checkpoints_clean_split_convnext_tiny\\all_predictions_tta.csv",
+  "groups": [
+    "Type 1/2 hard",
+    "Type 3/4 normal-range",
+    "Type 5/6 soft-loose",
+    "Type 7 watery"
+  ],
+  "total": 216,
+  "accuracy": 0.7037037037037037,
+  "macro_f1": 0.6291780406430088,
+  "correct": 152,
+  "mean_group_confidence": 0.83696268224311,
+  "mean_group_confidence_correct": 0.8495955957931935,
+  "classification_report": "                       precision    recall  f1-score   support\n\n        Type 1/2 hard     0.8750    0.7368    0.8000        38\nType 3/4 normal-range     0.7143    0.8219    0.7643        73\n  Type 5/6 soft-loose     0.6742    0.6977    0.6857        86\n        Type 7 watery     0.3636    0.2105    0.2667        19\n\n             accuracy                         0.7037       216\n            macro avg     0.6568    0.6167    0.6292       216\n         weighted avg     0.6957    0.7037    0.6955       216\n",
+  "confusion_matrix": [
+    [
+      28,
+      5,
+      5,
+      0
+    ],
+    [
+      2,
+      60,
+      11,
+      0
+    ],
+    [
+      0,
+      19,
+      60,
+      7
+    ],
+    [
+      2,
+      0,
+      13,
+      4
+    ]
+  ]
+}

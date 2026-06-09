@@ -1,0 +1,27 @@
+/.claude
+
+# Local IDE and environment files
+.idea/
+.vscode/
+.venv/
+Model-Dev-main/.idea/
+Model-Dev-main/.venv/
+__pycache__/
+*.py[cod]
+
+# Local datasets. Keep datasets out of normal GitHub commits.
+Model-Dev-main/GuTelligence-StoMy-Clean-Split/
+Model-Dev-main/GuTelligence-StoMy-First-Project-2/
+
+# Model weights and large export artifacts.
+*.pth
+*.pt
+*.onnx
+*.safetensors
+
+# Generated caches and logs.
+*.log
+.pytest_cache/
+
+# Large generated prediction dumps.
+Model-Dev-main/type7_risk_calibration/*predictions_full_probs.csv

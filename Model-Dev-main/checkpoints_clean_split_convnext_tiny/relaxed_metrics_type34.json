@@ -1,0 +1,86 @@
+{
+  "prediction_csv": "checkpoints_clean_split_convnext_tiny\\all_predictions_tta.csv",
+  "total": 216,
+  "strict_correct": 104,
+  "strict_accuracy": 0.48148148148148145,
+  "type34_relaxed_correct": 124,
+  "type34_relaxed_accuracy": 0.5740740740740741,
+  "type34_relaxed_gain_points": 9.259259259259261,
+  "type34_swap_recovered": 20,
+  "mean_confidence_all": 0.7393845682618795,
+  "mean_confidence_type34_recovered": 0.8270904704928398,
+  "confusion_matrix": [
+    [
+      14,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      3,
+      11,
+      0,
+      5,
+      5,
+      0,
+      0
+    ],
+    [
+      1,
+      1,
+      4,
+      17,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      3,
+      36,
+      7,
+      4,
+      0
+    ],
+    [
+      0,
+      0,
+      4,
+      7,
+      13,
+      18,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      8,
+      7,
+      22,
+      7
+    ],
+    [
+      2,
+      0,
+      0,
+      0,
+      0,
+      13,
+      4
+    ]
+  ],
+  "confusion_matrix_labels": [
+    "Type 1",
+    "Type 2",
+    "Type 3",
+    "Type 4",
+    "Type 5",
+    "Type 6",
+    "Type 7"
+  ]
+}

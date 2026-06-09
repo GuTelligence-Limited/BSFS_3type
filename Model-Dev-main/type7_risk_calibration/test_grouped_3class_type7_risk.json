@@ -1,0 +1,96 @@
+{
+  "prediction_csv": "C:\\gutelligence\\cv_model\\Model-Dev-main\\type7_risk_calibration\\test_predictions_full_probs.csv",
+  "groups": [
+    "Type 1/2 hard",
+    "Type 3/4 normal-range",
+    "Type 5/6/7 loose-watery"
+  ],
+  "total": 216,
+  "grouped_3class_accuracy": 0.7962962962962963,
+  "grouped_3class_macro_f1": 0.794614468437678,
+  "grouped_3class_weighted_f1": 0.7974303649618237,
+  "grouped_3class_correct": 172,
+  "mean_pred_group_confidence": 0.8703383426699374,
+  "mean_pred_group_confidence_correct": 0.8923621565796608,
+  "type7_support": 19,
+  "type7_probability_mean": 0.06764610499936276,
+  "type7_probability_mean_true_type7": 0.18910077303390657,
+  "type7_probability_mean_not_type7": 0.05593220300618341,
+  "type7_roc_auc": 0.6815388725621159,
+  "type7_average_precision": 0.22140260038292994,
+  "type7_risk_thresholds": {
+    "0.10": {
+      "precision": 0.26666666666666666,
+      "recall": 0.42105263157894735,
+      "false_negative_rate": 0.5789473684210527,
+      "false_positive_rate": 0.1116751269035533,
+      "flagged_rate": 0.1388888888888889,
+      "tp": 8,
+      "fp": 22,
+      "fn": 11,
+      "tn": 175
+    },
+    "0.20": {
+      "precision": 0.3684210526315789,
+      "recall": 0.3684210526315789,
+      "false_negative_rate": 0.631578947368421,
+      "false_positive_rate": 0.06091370558375635,
+      "flagged_rate": 0.08796296296296297,
+      "tp": 7,
+      "fp": 12,
+      "fn": 12,
+      "tn": 185
+    },
+    "0.30": {
+      "precision": 0.35714285714285715,
+      "recall": 0.2631578947368421,
+      "false_negative_rate": 0.7368421052631579,
+      "false_positive_rate": 0.04568527918781726,
+      "flagged_rate": 0.06481481481481481,
+      "tp": 5,
+      "fp": 9,
+      "fn": 14,
+      "tn": 188
+    },
+    "0.40": {
+      "precision": 0.36363636363636365,
+      "recall": 0.21052631578947367,
+      "false_negative_rate": 0.7894736842105263,
+      "false_positive_rate": 0.03553299492385787,
+      "flagged_rate": 0.05092592592592592,
+      "tp": 4,
+      "fp": 7,
+      "fn": 15,
+      "tn": 190
+    },
+    "0.50": {
+      "precision": 0.36363636363636365,
+      "recall": 0.21052631578947367,
+      "false_negative_rate": 0.7894736842105263,
+      "false_positive_rate": 0.03553299492385787,
+      "flagged_rate": 0.05092592592592592,
+      "tp": 4,
+      "fp": 7,
+      "fn": 15,
+      "tn": 190
+    }
+  },
+  "classification_report": "                         precision    recall  f1-score   support\n\n          Type 1/2 hard     0.8750    0.7368    0.8000        38\n  Type 3/4 normal-range     0.7143    0.8219    0.7643        73\nType 5/6/7 loose-watery     0.8400    0.8000    0.8195       105\n\n               accuracy                         0.7963       216\n              macro avg     0.8098    0.7863    0.7946       216\n           weighted avg     0.8037    0.7963    0.7974       216\n",
+  "confusion_matrix": [
+    [
+      28,
+      5,
+      5
+    ],
+    [
+      2,
+      60,
+      11
+    ],
+    [
+      2,
+      19,
+      84
+    ]
+  ]
+}
