@@ -11,6 +11,7 @@ The Space runs a Gradio UI for the current product schema:
 - 3-class BSFS product grouping
 - continuous Type 7 probability as a risk signal
 - raw 7-class probabilities and top-3 output
+- model architecture summary through `torchinfo`
 
 ## Local Verification
 
@@ -83,6 +84,13 @@ If Git HTTPS push is blocked or times out, upload small files through the Hub AP
 ..\.venv\Scripts\hf.exe upload perram27/bsfs-3class-type7-risk-mvp app.py app.py --repo-type space --commit-message "Add Gradio app"
 ..\.venv\Scripts\hf.exe upload perram27/bsfs-3class-type7-risk-mvp requirements.txt requirements.txt --repo-type space --commit-message "Add requirements"
 ..\.venv\Scripts\hf.exe upload perram27/bsfs-3class-type7-risk-mvp model_registry.json model_registry.json --repo-type space --commit-message "Add model registry"
+```
+
+After architecture-tab updates, upload these files:
+
+```powershell
+..\.venv\Scripts\hf.exe upload perram27/bsfs-3class-type7-risk-mvp app.py app.py --repo-type space --commit-message "Add model architecture tab"
+..\.venv\Scripts\hf.exe upload perram27/bsfs-3class-type7-risk-mvp requirements.txt requirements.txt --repo-type space --commit-message "Add torchinfo dependency"
 ```
 
 ## Large File Handling

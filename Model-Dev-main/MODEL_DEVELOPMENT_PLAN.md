@@ -704,3 +704,9 @@ Hugging Face MVP status:
 - Small app files are uploaded to the Space.
 - Organization deployment under `GuTelligence-Limited` requires Hugging Face org write permission.
 - Remaining deployment requirement: upload `bsfs_convnext_tiny_final.pth` to the Space path expected by `model_registry.json`; current network attempts timed out on the 111 MB checkpoint.
+
+Model visualization direction:
+
+- Hugging Face Space should expose a lightweight `torchinfo` architecture summary for quick engineering inspection.
+- Netron should be used for deeper graph inspection through ONNX export.
+- Generated ONNX files remain local artifacts and are not committed to GitHub.

@@ -111,6 +111,29 @@ Outputs:
 type7_risk_calibration/
 ```
 
+## Model Visualization
+
+The Hugging Face Space includes a `Model Architecture` tab that shows a
+`torchinfo` summary for the ConvNeXt-Tiny product model:
+
+```text
+hf_space_mvp/app.py
+```
+
+For graph-level inspection in Netron, export the active model to ONNX:
+
+```powershell
+.\.venv\Scripts\python.exe export_model_for_netron.py
+```
+
+Default output:
+
+```text
+model_exports/bsfs_convnext_tiny_product.onnx
+```
+
+Open the ONNX file with Netron to inspect the model graph.
+
 ## Notes for Android Integration
 
 The Android app should not run model logic directly at this stage. It should call a hosted API that returns `product_schema`.

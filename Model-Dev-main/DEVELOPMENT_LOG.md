@@ -2125,6 +2125,72 @@ No .pth files remained in the rejected repeated experiment.
 No Python training process remained running.
 ```
 
+## 2026-06-23 - Model architecture visualization
+
+Goal:
+
+- Add model-structure visibility for engineering and CTO review.
+- Keep Hugging Face MVP simple and reliable.
+- Provide a separate Netron path for graph-level inspection.
+
+Files updated:
+
+```text
+hf_space_mvp/app.py
+hf_space_mvp/requirements.txt
+requirements.txt
+README.md
+HUGGINGFACE_SPACE_DEPLOYMENT.md
+MODEL_DEVELOPMENT_PLAN.md
+.gitignore
+```
+
+Files added:
+
+```text
+export_model_for_netron.py
+```
+
+Implementation:
+
+- Added a `Model Architecture` tab to the Hugging Face Gradio app.
+- Added `torchinfo` to the Space dependencies.
+- The architecture tab reports:
+  - device availability
+  - registry version
+  - ConvNeXt-Tiny backbone
+  - raw 7-class BSFS output
+  - 3-class product grouping
+  - Type 7 continuous risk probability
+  - checkpoint availability
+  - total/trainable parameters
+  - layer summary
+- Added a local ONNX export script for Netron inspection.
+- Added `model_exports/` to `.gitignore` so generated ONNX files do not enter Git.
+
+Verification:
+
+```powershell
+.\.venv\Scripts\python.exe -m py_compile hf_space_mvp\app.py export_model_for_netron.py
+.\.venv\Scripts\python.exe export_model_for_netron.py
+```
+
+Results:
+
+```text
+HF Space architecture summary smoke test passed.
+Total parameters reported by torchinfo path: 27,825,511
+ONNX export succeeded: model_exports/bsfs_convnext_tiny_product.onnx
+ONNX output size: 111,386,589 bytes
+```
+
+Hugging Face Space update:
+
+```text
+app.py uploaded: https://huggingface.co/spaces/perram27/bsfs-3class-type7-risk-mvp/commit/d0154a6535eee274d4dd78ab8baac521c3d788d9
+requirements.txt uploaded: https://huggingface.co/spaces/perram27/bsfs-3class-type7-risk-mvp/commit/70cf4a1674cdc7396639c00e90fff4836b4e95f0
+```
+
 ### ConvNeXt-Tiny Raw-Primary Multi-Task Experiment
 
 Date: 2026-06-05

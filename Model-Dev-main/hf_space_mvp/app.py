@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import json
 from functools import lru_cache
+from io import StringIO
 from pathlib import Path
 
 import gradio as gr
 import numpy as np
 import torch
 from PIL import Image
+from torchinfo import summary
 from torchvision import models, transforms
 from torchvision.transforms import functional as TF
 
@@ -66,6 +68,25 @@ def load_registry() -> dict:
     return json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
 
 
+def resolve_checkpoint_path(registry_path: str) -> Path:
+    candidates = [
+        BASE_DIR / registry_path,
+        BASE_DIR / "bsfs_convnext_tiny_final.pth",
+        BASE_DIR / "checkpoints_clean_split_convnext_tiny" / "bsfs_convnext_tiny_final.pth",
+    ]
+    for path in candidates:
+        if path.exists():
+            return path
+
+    tried = "\n".join(str(path) for path in candidates)
+    raise FileNotFoundError(
+        "Missing checkpoint file. Tried:\n"
+        f"{tried}\n\n"
+        "Upload bsfs_convnext_tiny_final.pth to either the Space root or "
+        "checkpoints_clean_split_convnext_tiny/."
+    )
+
+
 def tta_transforms(config: dict) -> list[transforms.Compose]:
     image_size = int(config["image_size"])
     resize_size = int(config["resize_size"])
@@ -119,14 +140,10 @@ def load_model_and_config() -> tuple[torch.nn.Module, dict, dict]:
     registry = load_registry()
     mode_config = registry["modes"]["product_3class"]
     checkpoint = mode_config["checkpoints"][0]
-    checkpoint_path = BASE_DIR / checkpoint["path"]
-    if not checkpoint_path.exists():
-        raise FileNotFoundError(
-            f"Missing checkpoint: {checkpoint_path}. Upload the .pth file with Git LFS."
-        )
+    checkpoint_path = resolve_checkpoint_path(checkpoint["path"])
 
     model = build_convnext_tiny(num_classes=len(registry["class_names"]))
-    state_dict = torch.load(checkpoint_path, map_location=DEVICE)
+    state_dict = torch.load(checkpoint_path, map_location="cpu")
     model.load_state_dict(state_dict)
     model.to(DEVICE).eval()
     return model, registry, mode_config
@@ -212,32 +229,89 @@ def predict(image: Image.Image) -> tuple[str, float, float, dict, dict]:
     )
 
 
+def get_model_architecture() -> str:
+    registry = load_registry()
+    model = build_convnext_tiny(num_classes=len(registry["class_names"]))
+    total_params = sum(param.numel() for param in model.parameters())
+    trainable_params = sum(param.numel() for param in model.parameters() if param.requires_grad)
+    checkpoint_config = registry["modes"]["product_3class"]["checkpoints"][0]
+
+    try:
+        checkpoint_path = resolve_checkpoint_path(checkpoint_config["path"])
+        checkpoint_status = f"found: {checkpoint_path.relative_to(BASE_DIR)}"
+    except FileNotFoundError:
+        checkpoint_status = "missing"
+
+    buffer = StringIO()
+    buffer.write("BSFS ConvNeXt-Tiny Product Model\n")
+    buffer.write("=" * 80 + "\n")
+    buffer.write(f"Device available to Space: {DEVICE}\n")
+    buffer.write(f"Registry version: {registry['version']}\n")
+    buffer.write(f"Backbone: ConvNeXt-Tiny\n")
+    buffer.write(f"Input tensor: 1 x 3 x 300 x 300\n")
+    buffer.write(f"Raw model output: {len(registry['class_names'])} BSFS logits\n")
+    buffer.write("Product output: 3-class grouped schema + continuous Type 7 probability\n")
+    buffer.write(f"Checkpoint status: {checkpoint_status}\n")
+    buffer.write(f"Total parameters: {total_params:,}\n")
+    buffer.write(f"Trainable parameters: {trainable_params:,}\n\n")
+    buffer.write("Product group mapping\n")
+    buffer.write("- Type 1/2 hard: raw Type 1 + Type 2\n")
+    buffer.write("- Type 3/4 normal-range: raw Type 3 + Type 4\n")
+    buffer.write("- Type 5/6/7 loose-watery: raw Type 5 + Type 6 + Type 7\n")
+    buffer.write("- Type 7 probability is retained as an independent continuous risk signal\n\n")
+    buffer.write("Torchinfo summary\n")
+    buffer.write("-" * 80 + "\n")
+    model_summary = summary(
+        model,
+        input_size=(1, 3, 300, 300),
+        device="cpu",
+        verbose=0,
+        col_names=("input_size", "output_size", "num_params", "trainable"),
+        row_settings=("var_names",),
+    )
+    buffer.write(str(model_summary))
+    return buffer.getvalue()
+
+
 with gr.Blocks(title="BSFS 3-Class + Type 7 Risk MVP") as demo:
     gr.Markdown(
         "# BSFS 3-Class + Type 7 Risk MVP\n"
         "Upload an image to get the product 3-class group and continuous Type 7 risk probability. "
         "This MVP is for engineering validation only, not medical diagnosis."
     )
-    with gr.Row():
-        image_input = gr.Image(type="pil", label="Input image")
-        with gr.Column():
-            primary_group = gr.Textbox(label="Primary product group")
-            primary_confidence = gr.Number(label="Primary group confidence", precision=4)
-            type7_probability = gr.Number(label="Type 7 probability", precision=4)
-            group_probabilities = gr.JSON(label="3-class group probabilities")
-    full_json = gr.JSON(label="Full product output")
-    predict_button = gr.Button("Run inference", variant="primary")
-    predict_button.click(
-        fn=predict,
-        inputs=image_input,
-        outputs=[
-            primary_group,
-            primary_confidence,
-            type7_probability,
-            group_probabilities,
-            full_json,
-        ],
-    )
+    with gr.Tab("Inference"):
+        with gr.Row():
+            image_input = gr.Image(type="pil", label="Input image")
+            with gr.Column():
+                primary_group = gr.Textbox(label="Primary product group")
+                primary_confidence = gr.Number(label="Primary group confidence", precision=4)
+                type7_probability = gr.Number(label="Type 7 probability", precision=4)
+                group_probabilities = gr.JSON(label="3-class group probabilities")
+        full_json = gr.JSON(label="Full product output")
+        predict_button = gr.Button("Run inference", variant="primary")
+        predict_button.click(
+            fn=predict,
+            inputs=image_input,
+            outputs=[
+                primary_group,
+                primary_confidence,
+                type7_probability,
+                group_probabilities,
+                full_json,
+            ],
+        )
+    with gr.Tab("Model Architecture"):
+        architecture_output = gr.Textbox(
+            label="ConvNeXt-Tiny architecture summary",
+            lines=32,
+            max_lines=42,
+        )
+        architecture_button = gr.Button("Load model architecture", variant="secondary")
+        architecture_button.click(
+            fn=get_model_architecture,
+            inputs=[],
+            outputs=architecture_output,
+        )
 
 
 if __name__ == "__main__":
